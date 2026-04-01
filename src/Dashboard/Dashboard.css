@@ -1,0 +1,37 @@
+.vertParent {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 20px;
+	min-width: 100vw;
+	min-height: 100vh;
+}
+
+.authBtn {
+	position: relative;
+	cursor: pointer;
+	margin-bottom: 100px;
+	border-width: 2px;
+	border-style: solid;
+	border-color: rgb(162, 0, 255);
+	border-radius: 20px;
+	background-color: purple;
+	width: 200px;
+	height: 40px;
+	color: white;
+}
+
+.helperText {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-top: 0px;
+	color: black;
+	font-size: 16pt;
+	text-align: left;
+	text-shadow: -1 -1 2 black;
+}
+
+.formOpt {
+	margin-left: 30px;
+}
