@@ -10,6 +10,13 @@ export const Dashboard = () => {
 	// Define type for user role
 	type UserRole = "Student" | "Professor" | "Course Scheduler";
 
+	// Define type for QueryParam
+	type QueryParam =
+		| "Instructor"
+		| "Building"
+		| "Meeting Days"
+		| "Faculty Ratio";
+
 	// Pull role from metadata - no need for state as this never changes once set
 	const role = user?.unsafeMetadata.role as UserRole;
 
@@ -17,6 +24,13 @@ export const Dashboard = () => {
 
 	// State for selectedRole
 	const [selectedRole, setSelectedRole] = useState<UserRole>("Student");
+
+	// State for selectedQueryParam - YOU CAN ONLY QUERY WITH ONE PARAM PER BACKEND CALL
+	const [selectedQueryParam, setSelectedQueryParam] =
+		useState<QueryParam>("Instructor");
+
+	// State for selectedParamValue - TRACKS VALUE REGUARDLESS OF SELECTED QUERYPARAM
+	const [selectedParamValue, setSelectedParamValue] = useState<string>("");
 
 	// Function for setting a user's role in Clerk metadata
 	const assignRole = async () => {
@@ -138,7 +152,142 @@ export const Dashboard = () => {
 					</button>
 				)}
 			</div>
-
+			<div className="horizontalLayer leftAlign">
+				<p className={"introText"}>Query By?</p>
+				<form>
+					<label>
+						<input
+							className={"formOpt"}
+							type="radio"
+							name="choiceGroup"
+							value="Instructor"
+							checked={selectedQueryParam === "Instructor"}
+							onChange={() => setSelectedQueryParam("Instructor")}
+						/>
+						Instructor
+					</label>
+					<label>
+						<input
+							className={"formOpt"}
+							type="radio"
+							name="choiceGroup"
+							value="Building"
+							checked={selectedQueryParam === "Building"}
+							onChange={() => setSelectedQueryParam("Building")}
+						/>
+						Building
+					</label>
+					<label>
+						<input
+							className={"formOpt"}
+							type="radio"
+							name="choiceGroup"
+							value="Meeting Days"
+							checked={selectedQueryParam === "Meeting Days"}
+							onChange={() =>
+								setSelectedQueryParam("Meeting Days")
+							}
+						/>
+						Meeting Days
+					</label>
+					<label>
+						<input
+							className={"formOpt"}
+							type="radio"
+							name="choiceGroup"
+							value="Faculty Ratio"
+							checked={selectedQueryParam === "Faculty Ratio"}
+							onChange={() =>
+								setSelectedQueryParam("Faculty Ratio")
+							}
+						/>
+						Faculty Ratio
+					</label>
+				</form>
+			</div>
+			<div className="horizontalLayer leftAlign">
+				<p className="introText">
+					Search for which {selectedQueryParam}:
+				</p>
+				{(selectedQueryParam == "Instructor" ||
+					selectedQueryParam == "Building") && (
+					<input
+						type="text"
+						value={selectedParamValue}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+							setSelectedParamValue(e.target.value);
+						}}
+					/>
+				)}
+				{selectedQueryParam == "Meeting Days" && (
+					<form>
+						<label>
+							<input
+								className={"formOpt"}
+								type="radio"
+								name="choiceGroup"
+								value="M/W"
+								checked={selectedParamValue === "M/W"}
+								onChange={() => setSelectedParamValue("M/W")}
+							/>
+							M/W
+						</label>
+						<label>
+							<input
+								className={"formOpt"}
+								type="radio"
+								name="choiceGroup"
+								value="T/R"
+								checked={selectedParamValue === "T/R"}
+								onChange={() => setSelectedParamValue("T/R")}
+							/>
+							T/R
+						</label>
+						<label>
+							<input
+								className={"formOpt"}
+								type="radio"
+								name="choiceGroup"
+								value="F"
+								checked={selectedParamValue === "F"}
+								onChange={() => setSelectedParamValue("F")}
+							/>
+							F
+						</label>
+					</form>
+				)}
+				{selectedQueryParam == "Faculty Ratio" && (
+					<form>
+						<label>
+							<input
+								className={"formOpt"}
+								type="radio"
+								name="choiceGroup"
+								value="Most Support"
+								checked={selectedParamValue === "Most Support"}
+								onChange={() =>
+									setSelectedParamValue("Most Support")
+								}
+							/>
+							Most Support
+						</label>
+						<label>
+							<input
+								className={"formOpt"}
+								type="radio"
+								name="choiceGroup"
+								value="Least Support"
+								checked={selectedParamValue === "Least Support"}
+								onChange={() =>
+									setSelectedParamValue("Least Support")
+								}
+							/>
+							Least Support
+						</label>
+					</form>
+				)}
+				<button className="mainButton query">Query Database</button>
+			</div>
 			<CourseDisplay courses={dummyCourses} />
 		</div>
 	);
