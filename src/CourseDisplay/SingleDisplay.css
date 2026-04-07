@@ -6,7 +6,7 @@
 		100px /* shortName */
 		200px /* longName */
 		60px /* section */
-		60px /* enrollment */
+		80px /* enrollment */
 		60px /* totalTAs */
 		100px /* meetingDays */
 		180px /* meetingTimes */
@@ -15,7 +15,13 @@
 		200px /* instructorEmail */
 		200px; /* courseDescription */
 	gap: 0px;
-	padding: 4px;
+}
+
+.flexParent {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
 }
 
 .cell {
@@ -24,10 +30,13 @@
 	border-style: solid;
 	border-color: black;
 	background-color: rgb(255, 255, 169);
-	padding: 4px;
+	padding: 2px;
 	text-shadow: 1px 0px 0px rgb(85, 16, 16);
 }
 
+.headCell {
+	background-color: rgb(208, 208, 252);
+}
 .incomplete {
 	color: red;
 }

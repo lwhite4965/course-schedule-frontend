@@ -28,10 +28,10 @@ export const SingleDisplay = (props: { course: Course }) => {
 				{props.course.meetingRoom}
 			</div>
 			<div className={"cell"}>{props.course.instructorName}</div>
+			<div className={"cell"}>{props.course.instructorEmail}</div>
 			<div className={"cell lastCell"}>
-				{props.course.instructorEmail}
+				{props.course.courseDescription}
 			</div>
-			<div className={"cell"}>{props.course.courseDescription}</div>
 		</div>
 	);
 };
