@@ -1,0 +1,33 @@
+.container {
+	display: grid;
+	grid-template-columns:
+		80px /* term + level */
+		60px /* crn */
+		100px /* shortName */
+		200px /* longName */
+		60px /* section */
+		60px /* enrollment */
+		60px /* totalTAs */
+		100px /* meetingDays */
+		180px /* meetingTimes */
+		100px /* meetingRoom */
+		160px /* instructorName */
+		200px /* instructorEmail */
+		200px; /* courseDescription */
+	gap: 0px;
+	padding: 4px;
+}
+
+.cell {
+	margin: 2px;
+	border-width: 2px;
+	border-style: solid;
+	border-color: black;
+	background-color: rgb(255, 255, 169);
+	padding: 4px;
+	text-shadow: 1px 0px 0px rgb(85, 16, 16);
+}
+
+.incomplete {
+	color: red;
+}
