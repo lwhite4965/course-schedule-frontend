@@ -3,6 +3,7 @@ import { useUser, SignOutButton } from "@clerk/clerk-react";
 import { useState } from "react";
 import type { Course } from "../types/Course";
 import { CourseDisplay } from "../CourseDisplay/CourseDisplay";
+import { faker } from "@faker-js/faker";
 export const Dashboard = () => {
 	// Pull User Data from Clerk
 	const { user, isLoaded } = useUser();
@@ -11,11 +12,7 @@ export const Dashboard = () => {
 	type UserRole = "Student" | "Professor" | "Course Scheduler";
 
 	// Define type for QueryParam
-	type QueryParam =
-		| "Instructor"
-		| "Building"
-		| "Meeting Days"
-		| "Faculty Ratio";
+	type QueryParam = "Instructor" | "Building" | "Meeting Days" | "Faculty Ratio";
 
 	// Pull role from metadata - no need for state as this never changes once set
 	const role = user?.unsafeMetadata.role as UserRole;
@@ -26,8 +23,7 @@ export const Dashboard = () => {
 	const [selectedRole, setSelectedRole] = useState<UserRole>("Student");
 
 	// State for selectedQueryParam - YOU CAN ONLY QUERY WITH ONE PARAM PER BACKEND CALL
-	const [selectedQueryParam, setSelectedQueryParam] =
-		useState<QueryParam>("Instructor");
+	const [selectedQueryParam, setSelectedQueryParam] = useState<QueryParam>("Instructor");
 
 	// State for selectedParamValue - TRACKS VALUE REGUARDLESS OF SELECTED QUERYPARAM
 	const [selectedParamValue, setSelectedParamValue] = useState<string>("");
@@ -49,40 +45,19 @@ export const Dashboard = () => {
 			<div className="vertParent">
 				<p className={"helperText"}>Which Role?</p>
 				<form>
-					<label>
-						<input
+					{["Student", "Professor", "Course Scheduler"].map((roleOption) => (
+						<label key={roleOption}>
+							<input
 							className={"formOpt"}
 							type="radio"
 							name="choiceGroup"
-							value="Student"
-							checked={selectedRole === "Student"}
-							onChange={() => setSelectedRole("Student")}
+							value={roleOption}
+							checked={selectedRole === roleOption}
+							onChange={() => setSelectedRole(roleOption as UserRole)}
 						/>
-						Student
+						{roleOption}
 					</label>
-
-					<label>
-						<input
-							className={"formOpt"}
-							type="radio"
-							name="choiceGroup"
-							value="Professor"
-							checked={selectedRole === "Professor"}
-							onChange={() => setSelectedRole("Professor")}
-						/>
-						Professor
-					</label>
-					<label>
-						<input
-							className={"formOpt"}
-							type="radio"
-							name="choiceGroup"
-							value="Course Scheduler"
-							checked={selectedRole === "Course Scheduler"}
-							onChange={() => setSelectedRole("Course Scheduler")}
-						/>
-						Course Scheduler
-					</label>
+				))}
 				</form>
 				<p className="helperText">Selected: {selectedRole}</p>
 				<button className="authBtn" onClick={() => assignRole()}>
@@ -93,43 +68,41 @@ export const Dashboard = () => {
 	}
 
 	// Dummy Data just to set up Frontend
-	const dummyCourses: Course[] = [
-		{
-			term: "S25",
-			level: "UG",
-			section: "001",
-			crn: "00001",
-			shortName: "COP 4200",
-			longName: "Data Structures",
-			enrollment: 34,
-			totalTAs: 3,
-			meetingRoom: "SOC 142",
-			meetingDays: ["M", "W"],
-			meetingTimes: ["9:00AM", "12:00PM"],
-			instructorName: "Henry H. Jeanty",
-			instructorEmail: "hjeanty@usf.edu",
-			courseDescription: "N/A"
-		},
-		{
-			term: "S26",
-			level: "GR",
-			section: "001",
-			crn: "00004",
-			shortName: "COP 6000",
-			longName: "Program Design But Harder",
-			enrollment: 6,
-			totalTAs: 1,
-			meetingRoom: "BSN 4200",
-			meetingDays: ["F"],
-			meetingTimes: ["9:00 AM", "12:00 PM"],
-			instructorName: "Hye S. Yi",
-			instructorEmail: "hsyiy@usf.edu",
-			courseDescription: "N/A"
-		}
-	];
+	const TERMS: Course["term"][] = ["S25", "F25", "S26"];
+	const LEVELS: Course["level"][] = ["UG", "GR"];
+	const MEETING_DAYS: Course["meetingDays"][] = [["M", "W"], ["T", "R"], ["F"]];
+	const dummyCourses: Course[] = [];
+
+	for (let i = 0; i < 30; i++) {
+		dummyCourses.push({
+			term: faker.helpers.arrayElement(TERMS),
+			level: faker.helpers.arrayElement(LEVELS),
+			section: faker.string.numeric(3),
+			crn: faker.string.numeric(5),
+			shortName: `${faker.string.alpha({ length: 3, casing: 'upper' })} ${faker.string.numeric(4)}`,
+			longName: faker.helpers.arrayElement(["Data Structures", "Software Engineering", "Operating Systems", "Database Design"]),
+			enrollment: faker.number.int({ min: 10, max: 100 }),
+			totalTAs: faker.number.int({ min: 0, max: 5 }),
+			meetingRoom: `${faker.string.alpha({ length: 3, casing: 'upper' })} ${faker.string.numeric(3)}`,
+			meetingDays: faker.helpers.arrayElement(MEETING_DAYS),
+			meetingTimes: [`${faker.number.int({ min: 8, max: 15 })}:00`, `${faker.number.int({ min: 16, max: 22 })}:00`],
+			instructorName: faker.person.fullName(),
+			instructorEmail: faker.internet.email(),
+			courseDescription: faker.lorem.sentence()
+		});
+	}
 
 	// Get user's email
 	const userEmail = user?.emailAddresses[0].emailAddress;
+
+
+	// For multiple choice query params optins
+	const selectedQueryParamOptions = {
+		"Instructor": [],
+		"Building": [],
+		"Meeting Days": ["M/W", "T/R", "F"],
+		"Faculty Ratio": ["Most Support", "Least Support"]
+	};
 
 	// RETURN THE MORE TRADITIONAL DASHBOARD, WITH UNIQUE TABS BASED ON ROLE
 	return (
@@ -141,76 +114,33 @@ export const Dashboard = () => {
 				<p className="introText">
 					{userEmail} - {role}
 				</p>
-				{role == "Course Scheduler" && (
+				{["Course Scheduler", "Professor"].includes(role) && (
 					<button className="mainButton">
-						Update Course Descriptions
-					</button>
-				)}
-				{role == "Professor" && (
-					<button className="mainButton">
-						Download Course Schedule
+						{role == "Course Scheduler" ? "Update Course Descriptions" : "Some Other Action"}
 					</button>
 				)}
 			</div>
 			<div className="horizontalLayer leftAlign">
 				<p className={"introText"}>Query By?</p>
 				<form>
-					<label>
-						<input
-							className={"formOpt"}
-							type="radio"
-							name="choiceGroup"
-							value="Instructor"
-							checked={selectedQueryParam === "Instructor"}
-							onChange={() => setSelectedQueryParam("Instructor")}
-						/>
-						Instructor
-					</label>
-					<label>
-						<input
-							className={"formOpt"}
-							type="radio"
-							name="choiceGroup"
-							value="Building"
-							checked={selectedQueryParam === "Building"}
-							onChange={() => setSelectedQueryParam("Building")}
-						/>
-						Building
-					</label>
-					<label>
-						<input
-							className={"formOpt"}
-							type="radio"
-							name="choiceGroup"
-							value="Meeting Days"
-							checked={selectedQueryParam === "Meeting Days"}
-							onChange={() =>
-								setSelectedQueryParam("Meeting Days")
-							}
-						/>
-						Meeting Days
-					</label>
-					<label>
-						<input
-							className={"formOpt"}
-							type="radio"
-							name="choiceGroup"
-							value="Faculty Ratio"
-							checked={selectedQueryParam === "Faculty Ratio"}
-							onChange={() =>
-								setSelectedQueryParam("Faculty Ratio")
-							}
-						/>
-						Faculty Ratio
-					</label>
+					{["Instructor", "Building", "Meeting Days", "Faculty Ratio"].map((param) => (
+						<label key={param}>
+							<input
+								className={"formOpt"}
+								type="radio"
+								name="choiceGroup"
+								value={param}
+								checked={selectedQueryParam === param}
+								onChange={() => setSelectedQueryParam(param as QueryParam)}
+							/>
+							{param}
+						</label>
+					))}
 				</form>
 			</div>
 			<div className="horizontalLayer leftAlign">
-				<p className="introText">
-					Search for which {selectedQueryParam}:
-				</p>
-				{(selectedQueryParam == "Instructor" ||
-					selectedQueryParam == "Building") && (
+				<p className="introText">Search for which {selectedQueryParam}:</p>
+				{["Instructor", "Building"].includes(selectedQueryParam) && (
 					<input
 						type="text"
 						value={selectedParamValue}
@@ -219,71 +149,20 @@ export const Dashboard = () => {
 						}}
 					/>
 				)}
-				{selectedQueryParam == "Meeting Days" && (
+				{["Meeting Days", "Faculty Ratio"].includes(selectedQueryParam) && (
 					<form>
-						<label>
-							<input
-								className={"formOpt"}
-								type="radio"
-								name="choiceGroup"
-								value="M/W"
-								checked={selectedParamValue === "M/W"}
-								onChange={() => setSelectedParamValue("M/W")}
-							/>
-							M/W
-						</label>
-						<label>
-							<input
-								className={"formOpt"}
-								type="radio"
-								name="choiceGroup"
-								value="T/R"
-								checked={selectedParamValue === "T/R"}
-								onChange={() => setSelectedParamValue("T/R")}
-							/>
-							T/R
-						</label>
-						<label>
-							<input
-								className={"formOpt"}
-								type="radio"
-								name="choiceGroup"
-								value="F"
-								checked={selectedParamValue === "F"}
-								onChange={() => setSelectedParamValue("F")}
-							/>
-							F
-						</label>
-					</form>
-				)}
-				{selectedQueryParam == "Faculty Ratio" && (
-					<form>
-						<label>
-							<input
-								className={"formOpt"}
-								type="radio"
-								name="choiceGroup"
-								value="Most Support"
-								checked={selectedParamValue === "Most Support"}
-								onChange={() =>
-									setSelectedParamValue("Most Support")
-								}
-							/>
-							Most Support
-						</label>
-						<label>
-							<input
-								className={"formOpt"}
-								type="radio"
-								name="choiceGroup"
-								value="Least Support"
-								checked={selectedParamValue === "Least Support"}
-								onChange={() =>
-									setSelectedParamValue("Least Support")
-								}
-							/>
-							Least Support
-						</label>
+						{selectedQueryParamOptions[selectedQueryParam].map((option) => (
+							<label key={option}>
+								<input className={"formOpt"}
+									type="radio"
+									name="choiceGroup"
+									value={option}
+									checked={selectedParamValue === option}
+									onChange={() => setSelectedParamValue(option)}
+								/>
+								{option}
+							</label>
+						))}
 					</form>
 				)}
 				<button className="mainButton query">Query Database</button>

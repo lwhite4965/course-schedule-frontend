@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.4",
+    "@faker-js/faker": "^10.4.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
