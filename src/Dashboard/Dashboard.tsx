@@ -22,6 +22,9 @@ export const Dashboard = () => {
 	// State for selectedRole
 	const [selectedRole, setSelectedRole] = useState<UserRole>("Student");
 
+	// State for isRoleDialogOpen
+	const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(!role || !isLoaded);
+
 	// State for selectedQueryParam - YOU CAN ONLY QUERY WITH ONE PARAM PER BACKEND CALL
 	const [selectedQueryParam, setSelectedQueryParam] = useState<QueryParam>("Instructor");
 
@@ -37,10 +40,12 @@ export const Dashboard = () => {
 				role: selectedRole
 			}
 		});
+
+		setIsRoleDialogOpen(false);
 	};
 
 	// RETURN DIOLOGUE FOR ROLE SELECTION IF THERE IS NONE IN USER METADATA - THIS SHOULD ONLY HAPPEN ONCE PER USER
-	if (!role || !isLoaded) {
+	if (isRoleDialogOpen) {
 		return (
 			<div className="vertParent">
 				<p className={"helperText"}>Which Role?</p>
@@ -112,7 +117,7 @@ export const Dashboard = () => {
 					<button className="mainButton">Sign Out</button>
 				</SignOutButton>
 				<p className="introText">
-					{userEmail} - {role}
+					{userEmail} - {role} <button className="mainButton" onClick={() => setIsRoleDialogOpen(true)}>(Change?)</button>
 				</p>
 				{["Course Scheduler", "Professor"].includes(role) && (
 					<button className="mainButton">
