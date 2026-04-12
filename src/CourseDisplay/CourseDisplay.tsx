@@ -1,8 +1,15 @@
 import type { Course } from "../types/Course";
 import { SingleDisplay } from "./SingleDisplay.tsx";
 import "./SingleDisplay.css";
+import { useState } from "react";
 
 export const CourseDisplay = (props: { courses: Course[] }) => {
+	const pageLength = 10;
+	const [currentPage, setCurrentPage] = useState(1);
+	const totalPages = Math.max(1, Math.ceil(props.courses.length / pageLength));
+	const startIndex = (currentPage - 1) * pageLength;
+	const currentCourses = props.courses.slice(startIndex, startIndex + pageLength);
+
 	return (
 		<div className="flexParent">
 			<div className="container">
@@ -22,9 +29,22 @@ export const CourseDisplay = (props: { courses: Course[] }) => {
 					Course Description
 				</div>
 			</div>
-			{props.courses.map((course) => {
+			{currentCourses.map((course) => {
 				return <SingleDisplay course={course}></SingleDisplay>;
 			})}
+			<div>
+				<button
+					disabled={currentPage === 1}
+					onClick={() => setCurrentPage(currentPage - 1)}>
+					Previous
+				</button>
+				<span>Page {currentPage} of {totalPages}</span>
+				<button
+					disabled={currentPage === totalPages}
+					onClick={() => setCurrentPage(currentPage + 1)}>
+					Next
+				</button>
+			</div>
 		</div>
 	);
 };
