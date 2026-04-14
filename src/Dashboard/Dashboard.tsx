@@ -6,6 +6,7 @@ import { CourseDisplay } from "../CourseDisplay/CourseDisplay";
 import { faker } from "@faker-js/faker";
 import { fetchGenericCourses } from "../helpers/fetchFns";
 import { useQuery } from "@tanstack/react-query";
+import { downloadCoursesPDF } from "../helpers/generatePdf";
 
 export const Dashboard = () => {
 	// Pull User Data from Clerk
@@ -196,11 +197,19 @@ export const Dashboard = () => {
 						(Change?)
 					</button>
 				</p>
-				{["Course Scheduler", "Professor"].includes(role) && (
-					<button className="mainButton">
-						{role == "Course Scheduler"
-							? "Update Course Descriptions"
-							: "Some Other Action"}
+				{role === "Professor" && (
+					<button
+						className="mainButton"
+						onClick={() =>
+							downloadCoursesPDF([
+								dummyCourses[0],
+								dummyCourses[1],
+								dummyCourses[2],
+								dummyCourses[3],
+								dummyCourses[4]
+							])
+						}>
+						Download Schedule
 					</button>
 				)}
 			</div>
