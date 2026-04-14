@@ -216,6 +216,13 @@ export const Dashboard = () => {
 						Download Schedule
 					</button>
 				)}
+				{role === "Course Scheduler" && (
+					<button
+						className="mainButton"
+						onClick={() => setIsCourseEditModalVisible(true)}>
+						Create Course
+					</button>
+				)}
 			</div>
 			<div className="horizontalLayer leftAlign">
 				<p className={"introText"}>Query By?</p>
