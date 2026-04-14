@@ -4,6 +4,9 @@ import { useState } from "react";
 import type { Course } from "../types/Course";
 import { CourseDisplay } from "../CourseDisplay/CourseDisplay";
 import { faker } from "@faker-js/faker";
+import { fetchGenericCourses } from "../helpers/fetchFns";
+import { useQuery } from "@tanstack/react-query";
+
 export const Dashboard = () => {
 	// Pull User Data from Clerk
 	const { user, isLoaded } = useUser();
@@ -63,6 +66,21 @@ export const Dashboard = () => {
 		}
 	};
 
+	// useQuery hook for general query
+	const {
+		data: generalQueryCourses,
+		isLoading: isGeneralQueryLoading,
+		error: generalQueryError,
+		refetch: refetchGeneralQuery
+	} = useQuery({
+		queryKey: ["General Query"],
+		queryFn: () =>
+			fetchGenericCourses({
+				param: selectedQueryParam,
+				value: selectedParamValue
+			})
+	});
+
 	// Dummy Data just to set up Frontend
 	const TERMS: Course["term"][] = ["S25", "F25", "S26"];
 	const LEVELS: Course["level"][] = ["UG", "GR"];
@@ -103,7 +121,7 @@ export const Dashboard = () => {
 	}
 
 	// State for coursesToDisplay - these are what we pass to CourseDisplay
-	const [coursesToDisplay /* setCoursesToDisplay */] =
+	const [coursesToDisplay, setCoursesToDisplay] =
 		useState<Course[]>(dummyCourses);
 
 	// Function for setting a user's role in Clerk metadata
@@ -252,7 +270,9 @@ export const Dashboard = () => {
 					onClick={() => {
 						if (validateGenericQueryCombo()) {
 							setErrorTxt("");
-							// fetchGenericCourses
+							refetchGeneralQuery().then(() => {
+								setCoursesToDisplay(generalQueryCourses);
+							});
 						} else {
 							setErrorTxt(
 								"Invalid Query Combo: " +
@@ -267,8 +287,13 @@ export const Dashboard = () => {
 					Query Database
 				</button>
 				<p className="helperText error">{errorTxt}</p>
+				<p className="helperText error">{generalQueryError?.message}</p>
 			</div>
-			<CourseDisplay courses={coursesToDisplay} />
+			{isGeneralQueryLoading ? (
+				<p>Loading...</p>
+			) : (
+				<CourseDisplay courses={coursesToDisplay} />
+			)}
 		</div>
 	);
 };
