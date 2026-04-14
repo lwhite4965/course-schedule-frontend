@@ -4,6 +4,9 @@ import { useState } from "react";
 import type { Course } from "../types/Course";
 import { CourseDisplay } from "../CourseDisplay/CourseDisplay";
 import { faker } from "@faker-js/faker";
+import { fetchGenericCourses } from "../helpers/fetchFns";
+import { useQuery } from "@tanstack/react-query";
+import { downloadCoursesPDF } from "../helpers/generatePdf";
 import { CourseEditModal } from "../CourseEditModal/CourseEditModal";
 
 export const Dashboard = () => {
@@ -14,27 +17,117 @@ export const Dashboard = () => {
 	type UserRole = "Student" | "Professor" | "Course Scheduler";
 
 	// Define type for QueryParam
-	type QueryParam = "Instructor" | "Building" | "Meeting Days" | "Faculty Ratio";
+	type QueryParam =
+		| "Instructor"
+		| "Building"
+		| "Meeting Days"
+		| "Faculty Ratio";
 
 	// Pull role from metadata - no need for state as this never changes once set
 	const role = user?.unsafeMetadata.role as UserRole;
-
-	// THIS SECTION OF CODE IS ONLY USED FOR ASSIGNING A ROLE ON FIRST SIGN IN!!!!
 
 	// State for selectedRole
 	const [selectedRole, setSelectedRole] = useState<UserRole>("Student");
 
 	// State for isRoleDialogOpen
-	const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(!role || !isLoaded);
+	const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(
+		!role || !isLoaded
+	);
+
+	// State for errorTxt
+	const [errorTxt, setErrorTxt] = useState<string>("");
 
 	// State for selectedQueryParam - YOU CAN ONLY QUERY WITH ONE PARAM PER BACKEND CALL
-	const [selectedQueryParam, setSelectedQueryParam] = useState<QueryParam>("Instructor");
+	const [selectedQueryParam, setSelectedQueryParam] =
+		useState<QueryParam>("Instructor");
 
 	// State for selectedParamValue - TRACKS VALUE REGUARDLESS OF SELECTED QUERYPARAM
 	const [selectedParamValue, setSelectedParamValue] = useState<string>("");
 
 	// State for course edit modal visibility
 	const [isCourseEditModalVisible, setIsCourseEditModalVisible] = useState<boolean>(false);
+
+	// Validation function that accepts selecterQueryParam and selectedParamValue and returns true if it is a valid combo for fetching
+	const validateGenericQueryCombo = (): boolean => {
+		switch (selectedQueryParam) {
+			case "Instructor":
+				return selectedParamValue.length > 0;
+				break;
+
+			case "Building":
+				return selectedParamValue.length > 0;
+				break;
+
+			case "Meeting Days":
+				return ["M/W", "T/R", "F"].includes(selectedParamValue);
+				break;
+			case "Faculty Ratio":
+				return ["Most Support", "Least Support"].includes(
+					selectedParamValue
+				);
+
+			default:
+				return false;
+		}
+	};
+
+	// useQuery hook for general query
+	const {
+		data: generalQueryCourses,
+		isLoading: isGeneralQueryLoading,
+		error: generalQueryError,
+		refetch: refetchGeneralQuery
+	} = useQuery({
+		queryKey: ["General Query"],
+		queryFn: () =>
+			fetchGenericCourses({
+				param: selectedQueryParam,
+				value: selectedParamValue
+			})
+	});
+
+	// Dummy Data just to set up Frontend
+	const TERMS: Course["term"][] = ["S25", "F25", "S26"];
+	const LEVELS: Course["level"][] = ["UG", "GR"];
+	const MEETING_DAYS: Course["meetingDays"][] = [
+		["M", "W"],
+		["T", "R"],
+		["F"]
+	];
+
+	// Establish dummyCourses and initialize state
+	const dummyCourses: Course[] = [];
+
+	for (let i = 0; i < 30; i++) {
+		dummyCourses.push({
+			term: faker.helpers.arrayElement(TERMS),
+			level: faker.helpers.arrayElement(LEVELS),
+			section: faker.string.numeric(3),
+			crn: faker.string.numeric(5),
+			shortName: `${faker.string.alpha({ length: 3, casing: "upper" })} ${faker.string.numeric(4)}`,
+			longName: faker.helpers.arrayElement([
+				"Data Structures",
+				"Software Engineering",
+				"Operating Systems",
+				"Database Design"
+			]),
+			enrollment: faker.number.int({ min: 10, max: 100 }),
+			totalTAs: faker.number.int({ min: 0, max: 5 }),
+			meetingRoom: `${faker.string.alpha({ length: 3, casing: "upper" })} ${faker.string.numeric(3)}`,
+			meetingDays: faker.helpers.arrayElement(MEETING_DAYS),
+			meetingTimes: [
+				`${faker.number.int({ min: 8, max: 15 })}:00`,
+				`${faker.number.int({ min: 16, max: 22 })}:00`
+			],
+			instructorName: faker.person.fullName(),
+			instructorEmail: faker.internet.email(),
+			courseDescription: faker.lorem.sentence()
+		});
+	}
+
+	// State for coursesToDisplay - these are what we pass to CourseDisplay
+	const [coursesToDisplay, setCoursesToDisplay] =
+		useState<Course[]>(dummyCourses);
 
 	// Function for setting a user's role in Clerk metadata
 	const assignRole = async () => {
@@ -49,25 +142,30 @@ export const Dashboard = () => {
 		setIsRoleDialogOpen(false);
 	};
 
+	// THIS SECTION OF CODE IS ONLY USED FOR ASSIGNING A ROLE ON FIRST SIGN IN!!!!
 	// RETURN DIOLOGUE FOR ROLE SELECTION IF THERE IS NONE IN USER METADATA - THIS SHOULD ONLY HAPPEN ONCE PER USER
 	if (isRoleDialogOpen) {
 		return (
 			<div className="vertParent">
 				<p className={"helperText"}>Which Role?</p>
 				<form>
-					{["Student", "Professor", "Course Scheduler"].map((roleOption) => (
-						<label key={roleOption}>
-							<input
-							className={"formOpt"}
-							type="radio"
-							name="choiceGroup"
-							value={roleOption}
-							checked={selectedRole === roleOption}
-							onChange={() => setSelectedRole(roleOption as UserRole)}
-						/>
-						{roleOption}
-					</label>
-				))}
+					{["Student", "Professor", "Course Scheduler"].map(
+						(roleOption) => (
+							<label key={roleOption}>
+								<input
+									className={"formOpt"}
+									type="radio"
+									name="choiceGroup"
+									value={roleOption}
+									checked={selectedRole === roleOption}
+									onChange={() =>
+										setSelectedRole(roleOption as UserRole)
+									}
+								/>
+								{roleOption}
+							</label>
+						)
+					)}
 				</form>
 				<p className="helperText">Selected: {selectedRole}</p>
 				<button className="authBtn" onClick={() => assignRole()}>
@@ -77,34 +175,8 @@ export const Dashboard = () => {
 		);
 	}
 
-	// Dummy Data just to set up Frontend
-	const TERMS: Course["term"][] = ["S25", "F25", "S26"];
-	const LEVELS: Course["level"][] = ["UG", "GR"];
-	const MEETING_DAYS: Course["meetingDays"][] = [["M", "W"], ["T", "R"], ["F"]];
-	const dummyCourses: Course[] = [];
-
-	for (let i = 0; i < 30; i++) {
-		dummyCourses.push({
-			term: faker.helpers.arrayElement(TERMS),
-			level: faker.helpers.arrayElement(LEVELS),
-			section: faker.string.numeric(3),
-			crn: faker.string.numeric(5),
-			shortName: `${faker.string.alpha({ length: 3, casing: 'upper' })} ${faker.string.numeric(4)}`,
-			longName: faker.helpers.arrayElement(["Data Structures", "Software Engineering", "Operating Systems", "Database Design"]),
-			enrollment: faker.number.int({ min: 10, max: 100 }),
-			totalTAs: faker.number.int({ min: 0, max: 5 }),
-			meetingRoom: `${faker.string.alpha({ length: 3, casing: 'upper' })} ${faker.string.numeric(3)}`,
-			meetingDays: faker.helpers.arrayElement(MEETING_DAYS),
-			meetingTimes: [`${faker.number.int({ min: 8, max: 15 })}:00`, `${faker.number.int({ min: 16, max: 22 })}:00`],
-			instructorName: faker.person.fullName(),
-			instructorEmail: faker.internet.email(),
-			courseDescription: faker.lorem.sentence()
-		});
-	}
-
 	// Get user's email
 	const userEmail = user?.emailAddresses[0].emailAddress;
-
 
 	// For multiple choice query params optins
 	const selectedQueryParamOptions = {
@@ -122,18 +194,38 @@ export const Dashboard = () => {
 					<button className="mainButton">Sign Out</button>
 				</SignOutButton>
 				<p className="introText">
-					{userEmail} - {role} <button className="mainButton" onClick={() => setIsRoleDialogOpen(true)}>(Change?)</button>
+					{userEmail} - {role}{" "}
+					<button
+						className="mainButton"
+						onClick={() => setIsRoleDialogOpen(true)}>
+						(Change?)
+					</button>
 				</p>
-				{["Course Scheduler", "Professor"].includes(role) && (
-					<button className="mainButton" onClick={() => setIsCourseEditModalVisible(true)}>
-						{role == "Course Scheduler" ? "Update Course Descriptions" : "Some Other Action"}
+				{role === "Professor" && (
+					<button
+						className="mainButton"
+						onClick={() =>
+							downloadCoursesPDF([
+								dummyCourses[0],
+								dummyCourses[1],
+								dummyCourses[2],
+								dummyCourses[3],
+								dummyCourses[4]
+							])
+						}>
+						Download Schedule
 					</button>
 				)}
 			</div>
 			<div className="horizontalLayer leftAlign">
 				<p className={"introText"}>Query By?</p>
 				<form>
-					{["Instructor", "Building", "Meeting Days", "Faculty Ratio"].map((param) => (
+					{[
+						"Instructor",
+						"Building",
+						"Meeting Days",
+						"Faculty Ratio"
+					].map((param) => (
 						<label key={param}>
 							<input
 								className={"formOpt"}
@@ -141,7 +233,9 @@ export const Dashboard = () => {
 								name="choiceGroup"
 								value={param}
 								checked={selectedQueryParam === param}
-								onChange={() => setSelectedQueryParam(param as QueryParam)}
+								onChange={() =>
+									setSelectedQueryParam(param as QueryParam)
+								}
 							/>
 							{param}
 						</label>
@@ -149,7 +243,9 @@ export const Dashboard = () => {
 				</form>
 			</div>
 			<div className="horizontalLayer leftAlign">
-				<p className="introText">Search for which {selectedQueryParam}:</p>
+				<p className="introText">
+					Search for which {selectedQueryParam}:
+				</p>
 				{["Instructor", "Building"].includes(selectedQueryParam) && (
 					<input
 						type="text"
@@ -159,30 +255,63 @@ export const Dashboard = () => {
 						}}
 					/>
 				)}
-				{["Meeting Days", "Faculty Ratio"].includes(selectedQueryParam) && (
+				{["Meeting Days", "Faculty Ratio"].includes(
+					selectedQueryParam
+				) && (
 					<form>
-						{selectedQueryParamOptions[selectedQueryParam].map((option) => (
-							<label key={option}>
-								<input className={"formOpt"}
-									type="radio"
-									name="choiceGroup"
-									value={option}
-									checked={selectedParamValue === option}
-									onChange={() => setSelectedParamValue(option)}
-								/>
-								{option}
-							</label>
-						))}
+						{selectedQueryParamOptions[selectedQueryParam].map(
+							(option) => (
+								<label key={option}>
+									<input
+										className={"formOpt"}
+										type="radio"
+										name="choiceGroup"
+										value={option}
+										checked={selectedParamValue === option}
+										onChange={() =>
+											setSelectedParamValue(option)
+										}
+									/>
+									{option}
+								</label>
+							)
+						)}
 					</form>
 				)}
-				<button className="mainButton query">Query Database</button>
+				<button
+					className="mainButton query"
+					onClick={() => {
+						if (validateGenericQueryCombo()) {
+							setErrorTxt("");
+							refetchGeneralQuery().then(() => {
+								setCoursesToDisplay(generalQueryCourses);
+							});
+						} else {
+							setErrorTxt(
+								"Invalid Query Combo: " +
+									selectedQueryParam +
+									" + " +
+									(selectedParamValue
+										? selectedParamValue
+										: "null")
+							);
+						}
+					}}>
+					Query Database
+				</button>
+				<p className="helperText error">{errorTxt}</p>
+				<p className="helperText error">{generalQueryError?.message}</p>
 			</div>
+			{isGeneralQueryLoading ? (
+				<p>Loading...</p>
+			) : (
+				<CourseDisplay courses={coursesToDisplay} />
+			)}
 			<CourseEditModal
 				isVisible={isCourseEditModalVisible}
 				onSave={() => {setIsCourseEditModalVisible(false);}}
 				onClose={() => setIsCourseEditModalVisible(false)}
 			/>
-			<CourseDisplay courses={dummyCourses} />
 		</div>
 	);
 };
