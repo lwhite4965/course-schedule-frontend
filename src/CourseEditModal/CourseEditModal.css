@@ -1,0 +1,43 @@
+.courseEditOverlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.30);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	z-index: 20;
+}
+
+.courseEditModal {
+	background: white;
+	border: 1px solid black;
+	padding: 20px;
+	width: 50%;
+	max-height: 80vh;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.courseEditList {
+	display: flex;
+    flex-direction: column;
+	gap: 10px;
+}
+
+.fieldGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	font-weight: 600;
+}
+
+.fieldGroup input {
+	font: inherit;
+	font-weight: 400;
+	padding: 10px;
+	border: 1px solid black;
+	border-radius: 4px;
+}

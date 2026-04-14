@@ -4,6 +4,8 @@ import { useState } from "react";
 import type { Course } from "../types/Course";
 import { CourseDisplay } from "../CourseDisplay/CourseDisplay";
 import { faker } from "@faker-js/faker";
+import { CourseEditModal } from "../CourseEditModal/CourseEditModal";
+
 export const Dashboard = () => {
 	// Pull User Data from Clerk
 	const { user, isLoaded } = useUser();
@@ -30,6 +32,9 @@ export const Dashboard = () => {
 
 	// State for selectedParamValue - TRACKS VALUE REGUARDLESS OF SELECTED QUERYPARAM
 	const [selectedParamValue, setSelectedParamValue] = useState<string>("");
+
+	// State for course edit modal visibility
+	const [isCourseEditModalVisible, setIsCourseEditModalVisible] = useState<boolean>(false);
 
 	// Function for setting a user's role in Clerk metadata
 	const assignRole = async () => {
@@ -120,7 +125,7 @@ export const Dashboard = () => {
 					{userEmail} - {role} <button className="mainButton" onClick={() => setIsRoleDialogOpen(true)}>(Change?)</button>
 				</p>
 				{["Course Scheduler", "Professor"].includes(role) && (
-					<button className="mainButton">
+					<button className="mainButton" onClick={() => setIsCourseEditModalVisible(true)}>
 						{role == "Course Scheduler" ? "Update Course Descriptions" : "Some Other Action"}
 					</button>
 				)}
@@ -172,6 +177,11 @@ export const Dashboard = () => {
 				)}
 				<button className="mainButton query">Query Database</button>
 			</div>
+			<CourseEditModal
+				isVisible={isCourseEditModalVisible}
+				onSave={() => {setIsCourseEditModalVisible(false);}}
+				onClose={() => setIsCourseEditModalVisible(false)}
+			/>
 			<CourseDisplay courses={dummyCourses} />
 		</div>
 	);
