@@ -7,19 +7,20 @@
 .horizontalLayer {
 	display: flex;
 	flex-direction: row;
-	justify-content: space-between;
+	justify-content: start;
 	align-items: center;
+	gap: 60px;
 	margin: 10px;
 	border-bottom: 2px solid black;
 	padding: 10px;
 	padding-right: 200px;
 	padding-left: 200px;
 }
-
 .leftAlign {
 	justify-content: start;
 	gap: 40px;
 }
+
 .noBorder {
 	border-bottom: none;
 }

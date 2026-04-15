@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const fetchGenericCourses = async ({
+export const fetchGeneralCourses = async ({
 	param,
 	value
 }: {
