@@ -6,9 +6,9 @@ import { CourseDisplay } from "../CourseDisplay/CourseDisplay";
 // import dummyCourses from "../helpers/dummyData";
 import { fetchGeneralCourses, fetchAllCourses } from "../helpers/fetchFns";
 import { useQuery } from "@tanstack/react-query";
-import { downloadCoursesPDF } from "../helpers/generatePdf";
 import { Modal } from "../Modal/Modal";
 import { CourseEdit } from "../CourseEditForm/CourseEdit";
+import { ScheduleDownload } from "../ScheduleDownload/ScheduleDownload";
 import { validateGeneralQueryCombo } from "../helpers/queryValidation";
 
 export const Dashboard = () => {
@@ -64,6 +64,10 @@ export const Dashboard = () => {
 	const [isCourseEditModalVisible, setIsCourseEditModalVisible] =
 		useState<boolean>(false);
 
+	// State for schedule download modal visibility
+	const [isScheduleDownloadModalVisible, setIsScheduleDownloadModalVisible] =
+		useState<boolean>(false);
+
 	// useQuery hook for general query
 	const {
 		data: generalQueryCourses,
@@ -90,6 +94,7 @@ export const Dashboard = () => {
 		queryFn: () =>
 			fetchAllCourses().catch(() => {
 				setErrorTxt(allCoursesError?.message as string);
+				throw allCoursesError;
 			}),
 		refetchInterval: 10000
 	});
@@ -153,18 +158,18 @@ export const Dashboard = () => {
 					onClick={() => setIsRoleDialogOpen(true)}>
 					(Change Role?)
 				</button>
-				{role === "Professor" && (
-					<button
-						className="mainButton"
-						onClick={() => downloadCoursesPDF([])}>
-						Download Schedule
-					</button>
-				)}
 				{role === "Course Scheduler" && (
 					<button
 						className="mainButton"
 						onClick={() => setIsCourseEditModalVisible(true)}>
 						Modify Courses
+					</button>
+				)}
+				{role === "Professor" && (
+					<button
+						className="mainButton"
+						onClick={() => setIsScheduleDownloadModalVisible(true)}>
+						Download Schedule
 					</button>
 				)}
 			</div>
@@ -270,6 +275,11 @@ export const Dashboard = () => {
 				isVisible={isCourseEditModalVisible}
 				onClose={() => setIsCourseEditModalVisible(false)}>
 				<CourseEdit courses={allCourses} />
+			</Modal>
+			<Modal
+				isVisible={isScheduleDownloadModalVisible}
+				onClose={() => setIsScheduleDownloadModalVisible(false)}>
+				<ScheduleDownload />
 			</Modal>
 		</div>
 	);
