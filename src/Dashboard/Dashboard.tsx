@@ -7,7 +7,8 @@ import { faker } from "@faker-js/faker";
 import { fetchGenericCourses } from "../helpers/fetchFns";
 import { useQuery } from "@tanstack/react-query";
 import { downloadCoursesPDF } from "../helpers/generatePdf";
-import { CourseEditModal } from "../CourseEditModal/CourseEditModal";
+import { Modal } from "../Modal/Modal";
+import { CourseEdit } from "../CourseEditForm/CourseEdit";
 
 export const Dashboard = () => {
 	// Pull User Data from Clerk
@@ -45,7 +46,7 @@ export const Dashboard = () => {
 	const [selectedParamValue, setSelectedParamValue] = useState<string>("");
 
 	// State for course edit modal visibility
-	const [isCourseEditModalVisible, setIsCourseEditModalVisible] = useState<boolean>(false);
+	const [isCourseEditModalVisible, setIsCourseEditModalVisible] = useState<boolean>(true);
 
 	// Validation function that accepts selecterQueryParam and selectedParamValue and returns true if it is a valid combo for fetching
 	const validateGenericQueryCombo = (): boolean => {
@@ -314,11 +315,9 @@ export const Dashboard = () => {
 			) : (
 				<CourseDisplay courses={coursesToDisplay} />
 			)}
-			<CourseEditModal
-				isVisible={isCourseEditModalVisible}
-				onSave={() => {setIsCourseEditModalVisible(false);}}
-				onClose={() => setIsCourseEditModalVisible(false)}
-			/>
+			<Modal isVisible={isCourseEditModalVisible} onClose={() => setIsCourseEditModalVisible(false)}>
+				<CourseEdit courses={coursesToDisplay} />
+			</Modal>
 		</div>
 	);
 };
