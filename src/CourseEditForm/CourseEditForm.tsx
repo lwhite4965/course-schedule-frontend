@@ -39,7 +39,6 @@ export const CourseEditForm = (props: {isVisible: boolean, initialCourse?: Cours
                         {inputType === "radio" &&
                             <div>
                                 {options?.map((option) => (
-                                    console.log("Selected Option for " + name + ": ", selectedOption, "Current Option: ", option),
                                     <label key={option.toString()}>
                                         {option}
                                         <input
@@ -47,7 +46,7 @@ export const CourseEditForm = (props: {isVisible: boolean, initialCourse?: Cours
                                         name={altName}
                                         value={option}
                                         defaultChecked={Array.isArray(selectedOption) && selectedOption.toString() === option.toString() || selectedOption === option}
-                                        onChange={(e) => updateCourse(altName as keyof Course, e.target.value)}
+                                        onChange={(e) => setCourse((prevCourse) => ({...prevCourse, [altName]: e.target.value}))}
                                         />
                                     </label>
                                 ))}
@@ -56,12 +55,16 @@ export const CourseEditForm = (props: {isVisible: boolean, initialCourse?: Cours
                         {inputType === "multiText" &&
                             <div className="courseEditMultiText">
                                 {(selectedOption as string[]).map((value, i) => {
-                                    return <input key={i} type="text" name={altName + i} defaultValue={value} onChange={(e) => updateCourse(altName as keyof Course, e.target.value)} />;
+                                    return <input key={i} type="text" name={altName + i} defaultValue={value} onChange={(e) => setCourse((prevCourse) => {
+                                        const updatedValue = [...(prevCourse[altName as keyof Course] as string[])];
+                                        updatedValue[i] = e.target.value;
+                                        return {...prevCourse, [altName]: updatedValue};
+                                    })} />;
                                 })}
                             </div>
                         }
                         {inputType !== "radio" && inputType !== "multiText" && 
-                            <input type={inputType} name={altName} defaultValue={selectedOption} onChange={(e) => updateCourse(altName as keyof Course, e.target.value)} />
+                            <input type={inputType} name={altName} defaultValue={selectedOption} onChange={(e) => setCourse((prevCourse) => ({...prevCourse, [altName]: e.target.value}))} />
                         }
                     </label>
                 })}
