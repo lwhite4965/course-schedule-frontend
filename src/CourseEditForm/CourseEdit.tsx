@@ -21,6 +21,7 @@ const defaultCourse: Course = {
 };
 
 export const CourseEdit = (props: { courses: Course[] }) => {
+    const courses = props.courses || [];
     const [CRN, setCRN] = useState("");
     const [message, setMessage] = useState("");
     const [formVisible, setFormVisible] = useState(false);
@@ -30,7 +31,7 @@ export const CourseEdit = (props: { courses: Course[] }) => {
     const onCreate = () => {
         setFormVisible(false);
         setMessage("");
-        const courseToCreate = props.courses.find(course => course.crn === CRN);
+        const courseToCreate = courses.find(course => course.crn === CRN);
         
         if (courseToCreate) {
             setMessage("Course with CRN " + CRN + " already exists");
@@ -45,7 +46,7 @@ export const CourseEdit = (props: { courses: Course[] }) => {
     const onEdit = () => {
         setFormVisible(false);
         setMessage("");
-        const courseToEdit = props.courses.find(course => course.crn === CRN);
+        const courseToEdit = courses.find(course => course.crn === CRN);
         
         if (!courseToEdit) {
             setMessage("Course with CRN " + CRN + " not found");
@@ -60,7 +61,7 @@ export const CourseEdit = (props: { courses: Course[] }) => {
     const onDelete = () => {
         setFormVisible(false);
         setMessage("");
-        const courseToDelete = props.courses.find(course => course.crn === CRN);
+        const courseToDelete = courses.find(course => course.crn === CRN);
         
         if (!courseToDelete) {
             setMessage("Course with CRN " + CRN + " not found");
