@@ -2,6 +2,7 @@ import type { Course } from "../types/Course";
 import { SingleDisplay } from "./SingleDisplay.tsx";
 import "./SingleDisplay.css";
 import { useState } from "react";
+import { Loading } from "../Loading/Loading";
 
 export const CourseDisplay = (props: { courses: Course[] }) => {
 	const pageLength = 10;
@@ -38,6 +39,7 @@ export const CourseDisplay = (props: { courses: Course[] }) => {
 			{currentCourses.map((course) => {
 				return <SingleDisplay course={course}></SingleDisplay>;
 			})}
+			<Loading />
 			<div>
 				<button
 					disabled={currentPage === 1}

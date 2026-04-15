@@ -1,10 +1,10 @@
 import "./Dashboard.css";
 import { useUser, SignOutButton } from "@clerk/clerk-react";
 import { useState } from "react";
-import type { Course } from "../types/Course";
+// import type { Course } from "../types/Course";
 import { CourseDisplay } from "../CourseDisplay/CourseDisplay";
-import dummyCourses from "../helpers/dummyData";
-import { fetchGeneralCourses } from "../helpers/fetchFns";
+// import dummyCourses from "../helpers/dummyData";
+import { fetchGeneralCourses, fetchAllCourses } from "../helpers/fetchFns";
 import { useQuery } from "@tanstack/react-query";
 import { downloadCoursesPDF } from "../helpers/generatePdf";
 import { Modal } from "../Modal/Modal";
@@ -62,12 +62,12 @@ export const Dashboard = () => {
 
 	// State for course edit modal visibility
 	const [isCourseEditModalVisible, setIsCourseEditModalVisible] =
-		useState<boolean>(true);
+		useState<boolean>(false);
 
 	// useQuery hook for general query
 	const {
 		data: generalQueryCourses,
-		isLoading: isGeneralQueryLoading,
+		// isLoading: isGeneralQueryLoading,
 		error: generalQueryError,
 		refetch: refetchGeneralQuery
 	} = useQuery({
@@ -76,13 +76,23 @@ export const Dashboard = () => {
 			fetchGeneralCourses({
 				param: selectedGeneralQueryParam,
 				value: selectedGeneralParamValue
-			})
+			}),
+		refetchOnMount: false
 	});
 
-	// State for coursesToDisplay - these are what we pass to CourseDisplay
-	const [coursesToDisplay, setCoursesToDisplay] = useState<Course[]>(
-		dummyCourses /* allCourses */
-	);
+	//useQuery hook for ALL COURSES - AUTOMATICALLY POLLS EVERY 10s!!!!!
+	const {
+		data: allCourses,
+		// isLoading: areAllCoursesLoading,
+		error: allCoursesError
+	} = useQuery({
+		queryKey: ["All Courses"],
+		queryFn: () =>
+			fetchAllCourses().catch(() => {
+				setErrorTxt(allCoursesError?.message as string);
+			}),
+		refetchInterval: 10000
+	});
 
 	// THIS SECTION OF CODE IS ONLY USED FOR ASSIGNING A ROLE ON FIRST SIGN IN!!!!
 	// RETURN DIOLOGUE FOR ROLE SELECTION IF THERE IS NONE IN USER METADATA - THIS SHOULD ONLY HAPPEN ONCE PER USER
@@ -146,15 +156,7 @@ export const Dashboard = () => {
 				{role === "Professor" && (
 					<button
 						className="mainButton"
-						onClick={() =>
-							downloadCoursesPDF([
-								dummyCourses[0],
-								dummyCourses[1],
-								dummyCourses[2],
-								dummyCourses[3],
-								dummyCourses[4]
-							])
-						}>
+						onClick={() => downloadCoursesPDF([])}>
 						Download Schedule
 					</button>
 				)}
@@ -243,9 +245,7 @@ export const Dashboard = () => {
 							})
 						) {
 							setErrorTxt("");
-							refetchGeneralQuery().then(() => {
-								setCoursesToDisplay(generalQueryCourses);
-							});
+							refetchGeneralQuery();
 						} else {
 							setErrorTxt(
 								"Invalid Query Combo: " +
@@ -262,15 +262,14 @@ export const Dashboard = () => {
 				<p className="helperText error">{errorTxt}</p>
 				<p className="helperText error">{generalQueryError?.message}</p>
 			</div>
-			{isGeneralQueryLoading ? (
-				<p>Loading...</p>
-			) : (
-				<CourseDisplay courses={coursesToDisplay} />
-			)}
+			<CourseDisplay
+				/* Return whichever has less courses === most specialized */
+				courses={generalQueryCourses ?? allCourses ?? []}
+			/>
 			<Modal
 				isVisible={isCourseEditModalVisible}
 				onClose={() => setIsCourseEditModalVisible(false)}>
-				<CourseEdit courses={coursesToDisplay} />
+				<CourseEdit courses={allCourses} />
 			</Modal>
 		</div>
 	);
