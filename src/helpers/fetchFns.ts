@@ -1,6 +1,11 @@
 import axios from "axios";
 
-export const fetchGenericCourses = async ({
+export const fetchAllCourses = async () => {
+	const response = await axios.get("localhost:3000/GET/api/all");
+	return response.data;
+};
+
+export const fetchGeneralCourses = async ({
 	param,
 	value
 }: {
