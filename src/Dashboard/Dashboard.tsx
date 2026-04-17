@@ -9,6 +9,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Modal } from "../Modal/Modal";
 import { CourseEdit } from "../CourseEditForm/CourseEdit";
 import { ScheduleDownload } from "../ScheduleDownload/ScheduleDownload";
+import { DataReport } from "../DataReport/DataReport";
+
 import { validateGeneralQueryCombo } from "../helpers/queryValidation";
 
 export const Dashboard = () => {
@@ -42,7 +44,9 @@ export const Dashboard = () => {
 		| "Faculty Ratio";
 
 	// State for selectedRole
-	const [selectedRole, setSelectedRole] = useState<UserRole>("Student");
+	const [selectedRole, setSelectedRole] = useState<UserRole>(
+		role || "Student"
+	);
 
 	// State for isRoleDialogOpen
 	const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(
@@ -66,6 +70,10 @@ export const Dashboard = () => {
 
 	// State for schedule download modal visibility
 	const [isScheduleDownloadModalVisible, setIsScheduleDownloadModalVisible] =
+		useState<boolean>(false);
+
+	// State for data report modal visibility
+	const [isDataReportModalVisible, setIsDataReportModalVisible] =
 		useState<boolean>(false);
 
 	// useQuery hook for general query
@@ -172,6 +180,13 @@ export const Dashboard = () => {
 						Download Schedule
 					</button>
 				)}
+				{role === "Course Scheduler" && (
+					<button
+						className="mainButton"
+						onClick={() => setIsDataReportModalVisible(true)}>
+						Data Report
+					</button>
+				)}
 			</div>
 			<div className="horizontalLayer leftAlign">
 				<p className={"introText"}>Query By?</p>
@@ -270,6 +285,7 @@ export const Dashboard = () => {
 			<CourseDisplay
 				/* Return whichever has less courses === most specialized */
 				courses={generalQueryCourses ?? allCourses ?? []}
+				load={true}
 			/>
 			<Modal
 				isVisible={isCourseEditModalVisible}
@@ -280,6 +296,12 @@ export const Dashboard = () => {
 				isVisible={isScheduleDownloadModalVisible}
 				onClose={() => setIsScheduleDownloadModalVisible(false)}>
 				<ScheduleDownload />
+			</Modal>
+
+			<Modal
+				isVisible={isDataReportModalVisible}
+				onClose={() => setIsDataReportModalVisible(false)}>
+				<DataReport />
 			</Modal>
 		</div>
 	);

@@ -4,7 +4,7 @@ import "./SingleDisplay.css";
 import { useState } from "react";
 import { Loading } from "../Loading/Loading";
 
-export const CourseDisplay = (props: { courses: Course[] }) => {
+export const CourseDisplay = (props: { courses: Course[]; load?: boolean }) => {
 	const pageLength = 10;
 	const [currentPage, setCurrentPage] = useState(1);
 	const totalPages = Math.max(
@@ -39,7 +39,7 @@ export const CourseDisplay = (props: { courses: Course[] }) => {
 			{currentCourses.map((course) => {
 				return <SingleDisplay course={course}></SingleDisplay>;
 			})}
-			<Loading />
+			{props.load == true ? <Loading /> : null}
 			<div>
 				<button
 					disabled={currentPage === 1}
