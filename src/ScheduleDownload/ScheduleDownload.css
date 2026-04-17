@@ -3,3 +3,23 @@
 	flex-direction: column;
 	gap: 10px;
 }
+
+.radioLayer {
+	display: flex;
+	flex-direction: row;
+	gap: 20px;
+}
+
+.helperText {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-top: 0px;
+	color: black;
+	font-size: 16pt;
+	text-align: left;
+	text-shadow: -1 -1 2 black;
+}
+
+.error {
+	color: red;
+}

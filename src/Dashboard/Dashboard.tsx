@@ -10,7 +10,7 @@ import { Modal } from "../Modal/Modal";
 import { CourseEdit } from "../CourseEditForm/CourseEdit";
 import { ScheduleDownload } from "../ScheduleDownload/ScheduleDownload";
 import { DataReport } from "../DataReport/DataReport";
-
+import { RoomAvailability } from "../RoomAvailability/RoomAvailability";
 import { validateGeneralQueryCombo } from "../helpers/queryValidation";
 
 export const Dashboard = () => {
@@ -74,6 +74,10 @@ export const Dashboard = () => {
 
 	// State for data report modal visibility
 	const [isDataReportModalVisible, setIsDataReportModalVisible] =
+		useState<boolean>(false);
+
+	// State for room availability visibility
+	const [isRoomAvailabilityModalVisible, setIsRoomAvailabilityModalVisible] =
 		useState<boolean>(false);
 
 	// useQuery hook for general query
@@ -187,6 +191,11 @@ export const Dashboard = () => {
 						Data Report
 					</button>
 				)}
+				<button
+					className="mainButton"
+					onClick={() => setIsRoomAvailabilityModalVisible(true)}>
+					Room Availability
+				</button>
 			</div>
 			<div className="horizontalLayer leftAlign">
 				<p className={"introText"}>Query By?</p>
@@ -302,6 +311,11 @@ export const Dashboard = () => {
 				isVisible={isDataReportModalVisible}
 				onClose={() => setIsDataReportModalVisible(false)}>
 				<DataReport />
+			</Modal>
+			<Modal
+				isVisible={isRoomAvailabilityModalVisible}
+				onClose={() => setIsRoomAvailabilityModalVisible(false)}>
+				<RoomAvailability />
 			</Modal>
 		</div>
 	);
