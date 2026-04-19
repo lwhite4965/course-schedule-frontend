@@ -2,19 +2,17 @@ import axios from "axios";
 import type { Course } from "../types/Course";
 
 export const postCourseDescription = async ({
-	crn,
+	crnToModify,
 	newDescription
 }: {
-	crn: string;
+	crnToModify: string;
 	newDescription: string;
 }) => {
 	const response = await axios.post(
 		"http://localhost:9517/api/descriptions",
 		{
-			body: {
-				crnToModify: crn,
-				newDescription: newDescription
-			}
+			crnToModify: crnToModify,
+			newDescription: newDescription
 		}
 	);
 	return response.data;
@@ -22,9 +20,7 @@ export const postCourseDescription = async ({
 
 export const postNewCourse = async ({ newCourse }: { newCourse: Course }) => {
 	const response = await axios.post("http://localhost:9517/api/courses", {
-		body: {
-			newCourse: newCourse
-		}
+		newCourse: newCourse
 	});
 	return response.data;
 };
@@ -35,9 +31,7 @@ export const deleteExistingCourse = async ({
 	crnToDelete: string;
 }) => {
 	const response = await axios.post("http://localhost:9517/api/archive", {
-		body: {
-			crn: crnToDelete
-		}
+		crnToDelete: crnToDelete
 	});
 	return response.data;
 };

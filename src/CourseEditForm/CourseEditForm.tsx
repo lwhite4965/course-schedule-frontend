@@ -8,6 +8,7 @@ export const CourseEditForm = (props: {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	onSave: any;
 	descOnly?: boolean;
+	crn?: string;
 }) => {
 	const [course, setCourse] = useState<Course>(props.initialCourse as Course);
 
@@ -92,7 +93,8 @@ export const CourseEditForm = (props: {
 				}}
 				onSubmit={(e) => {
 					e.preventDefault();
-					props.onSave({});
+
+					props.onSave(editDesc);
 				}}>
 				<label key={"Description"} className="descLabel">
 					Course Description

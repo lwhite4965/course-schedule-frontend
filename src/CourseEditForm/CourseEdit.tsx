@@ -53,8 +53,11 @@ export const CourseEdit = (props: { courses: Course[] }) => {
 		isError: isFailureEdit
 	} = useMutation({
 		mutationKey: ["EditCourse"],
-		mutationFn: (desc: string) =>
-			postCourseDescription({ crn: CRN, newDescription: desc })
+		mutationFn: (newDescription: string) =>
+			postCourseDescription({
+				crnToModify: CRN,
+				newDescription: newDescription
+			})
 	});
 
 	const onCreate = () => {
@@ -129,6 +132,7 @@ export const CourseEdit = (props: { courses: Course[] }) => {
 				isVisible={formVisible}
 				initialCourse={currentCourse}
 				descOnly={currentMode === "edit"}
+				crn={CRN}
 				onSave={
 					currentMode === "edit" ? mutateEdit : console.log("hi")
 					// postNewCourse({ newCourse })
