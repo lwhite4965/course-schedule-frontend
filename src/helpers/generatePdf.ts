@@ -63,7 +63,7 @@ export function downloadCoursesPDF(courses: Course[]) {
 		// Write Header
 		doc.setFontSize(12);
 		doc.text(
-			`#${index + 1}) ${course.shortName} (${course.section}) - ${course.term}`,
+			`#${index + 1}) ${course.term} - ${course.shortName} (${course.section})`,
 			10,
 			y
 		);
