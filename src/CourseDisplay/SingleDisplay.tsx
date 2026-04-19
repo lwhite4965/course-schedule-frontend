@@ -1,11 +1,27 @@
 import type { Course } from "../types/Course";
 import "./SingleDisplay.css";
 
+const formatTerm = (preFormat: string): string => {
+	switch (preFormat) {
+		case "202501":
+			return "S25";
+			break;
+		case "202508":
+			return "F25";
+			break;
+		case "202601":
+			return "S26";
+			break;
+		default:
+			return "N/A";
+	}
+};
+
 export const SingleDisplay = (props: { course: Course }) => {
 	return (
 		<div className="container">
 			<div className={"cell firstCell"}>
-				{props.course.term} {props.course.level}
+				{formatTerm(props.course.term)} {props.course.level}
 			</div>
 			<div className={"cell"}>{props.course.crn}</div>
 			<div className={"cell"}>{props.course.shortName}</div>
