@@ -309,7 +309,8 @@ export const Dashboard = () => {
 
 			<Modal
 				isVisible={isDataReportModalVisible}
-				onClose={() => setIsDataReportModalVisible(false)}>
+				onClose={() => setIsDataReportModalVisible(false)}
+				largeModal={true}>
 				<DataReport />
 			</Modal>
 			<Modal

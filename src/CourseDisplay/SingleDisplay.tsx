@@ -27,7 +27,10 @@ export const SingleDisplay = (props: { course: Course }) => {
 				className={`cell + ${props.course.meetingRoom == "N/A" ? "incomplete" : ""}`}>
 				{props.course.meetingRoom}
 			</div>
-			<div className={"cell"}>{props.course.instructorName}</div>
+			<div
+				className={`cell + ${props.course.instructorName == "N/A" ? "incomplete" : ""}`}>
+				{props.course.instructorName}
+			</div>
 			<div className={"cell"}>{props.course.instructorEmail}</div>
 			<div className={"cell lastCell"}>
 				{props.course.courseDescription}
