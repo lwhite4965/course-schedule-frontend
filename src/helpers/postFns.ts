@@ -36,7 +36,7 @@ export const deleteExistingCourse = async ({
 }) => {
 	const response = await axios.post("http://localhost:9517/api/archive", {
 		body: {
-			crnToDelete: crnToDelete
+			crn: crnToDelete
 		}
 	});
 	return response.data;
