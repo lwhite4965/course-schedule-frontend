@@ -93,7 +93,6 @@ export const CourseEditForm = (props: {
 				}}
 				onSubmit={(e) => {
 					e.preventDefault();
-
 					props.onSave(editDesc);
 				}}>
 				<label key={"Description"} className="descLabel">

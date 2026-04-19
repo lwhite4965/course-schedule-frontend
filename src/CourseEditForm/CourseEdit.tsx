@@ -4,8 +4,8 @@ import { CourseEditForm } from "./CourseEditForm";
 import type { Course } from "../types/Course";
 import {
 	deleteExistingCourse,
-	postCourseDescription
-	// postNewCourse
+	postCourseDescription,
+	postNewCourse
 } from "../helpers/postFns";
 
 const defaultCourse: Course = {
@@ -57,6 +57,18 @@ export const CourseEdit = (props: { courses: Course[] }) => {
 			postCourseDescription({
 				crnToModify: CRN,
 				newDescription: newDescription
+			})
+	});
+
+	const {
+		mutate: mutateCreate,
+		isSuccess: isSuccessCreate,
+		isError: isFailureCreate
+	} = useMutation({
+		mutationKey: ["CreateCourse"],
+		mutationFn: (newCourse: Course) =>
+			postNewCourse({
+				newCourse: newCourse
 			})
 	});
 
@@ -133,23 +145,7 @@ export const CourseEdit = (props: { courses: Course[] }) => {
 				initialCourse={currentCourse}
 				descOnly={currentMode === "edit"}
 				crn={CRN}
-				onSave={
-					currentMode === "edit" ? mutateEdit : console.log("hi")
-					// postNewCourse({ newCourse })
-					// 	.then(() => {
-					// 		setMessage(
-					// 			"Successfully created course with CRN " +
-					// 				newCourse.crn
-					// 		);
-					// 		setCurrentMode("none");
-					// 	})
-					// 	.catch(() => {
-					// 		setMessage(
-					// 			"Failed to create course with CRN " +
-					// 				newCourse.crn
-					// 		);
-					// 	});
-				}
+				onSave={currentMode === "edit" ? mutateEdit : mutateCreate}
 			/>
 			<p>{message}</p>
 			{currentMode == "delete" && isSuccessDelete && (
@@ -163,6 +159,12 @@ export const CourseEdit = (props: { courses: Course[] }) => {
 			)}
 			{currentMode == "edit" && isFailureEdit && (
 				<p>Course Description for CRN {CRN} couldn't be updated</p>
+			)}
+			{currentMode == "create" && isFailureCreate && (
+				<p>Course with CRN {CRN} was successfully created</p>
+			)}
+			{currentMode == "create" && isSuccessCreate && (
+				<p>Course with CRN {CRN} couldn't be created</p>
 			)}
 		</div>
 	);
