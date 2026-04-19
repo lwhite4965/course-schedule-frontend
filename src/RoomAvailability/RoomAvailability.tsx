@@ -2,13 +2,25 @@ import "../ScheduleDownload/ScheduleDownload.css";
 import { fetchAvailableRooms } from "../helpers/fetchFns";
 import { useState } from "react";
 import { Loading } from "../Loading/Loading";
+import { useQuery } from "@tanstack/react-query";
 
 export const RoomAvailability = () => {
 	const [selectedRoomTime, setSelectedRoomTime] = useState<string>("8:00");
 	const [selectedDay, setSelectedDay] = useState<"M/W" | "T/R" | "F">("M/W");
-	const [availabilityError, setAvailabilityError] = useState<string>("");
-	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [availableRooms, setAvailableRooms] = useState<string[]>([]);
+	const [selectedRoomTimeStore, setSelectedRoomTimeStore] =
+		useState<string>("");
+	const [selectedDayStore, setSelectedDayStore] = useState<
+		"M/W" | "T/R" | "F" | ""
+	>("");
+	const { data, isLoading, error, refetch, isFetched } = useQuery({
+		queryKey: ["Room Availability"],
+		queryFn: () =>
+			fetchAvailableRooms({
+				time: selectedRoomTime,
+				days: selectedDay
+			}),
+		refetchOnMount: false
+	});
 
 	return (
 		<div className="courseEdit">
@@ -61,34 +73,28 @@ export const RoomAvailability = () => {
 				<button
 					className="mainButton"
 					onClick={() => {
-						setIsLoading(true);
-						fetchAvailableRooms({
-							time: selectedRoomTime,
-							days: selectedDay
-						})
-							.then((res) => {
-								setAvailabilityError("");
-								setAvailableRooms(res.data);
-								setIsLoading(false);
-							})
-							.catch((err) => {
-								setAvailabilityError(err.message);
-								setIsLoading(false);
-							});
+						refetch();
+						setSelectedDayStore(selectedDay);
+						setSelectedRoomTimeStore(selectedRoomTime);
 					}}>
 					Fetch Room Availability - {selectedDay} @ {selectedRoomTime}
 				</button>
 				{isLoading && <Loading />}
-				<p className="helperText">
-					Rooms Available {selectedDay} @ {selectedRoomTime}
-				</p>
+				{selectedDayStore && (
+					<p className="helperText">
+						Rooms Available {selectedDayStore} @{" "}
+						{selectedRoomTimeStore}
+					</p>
+				)}
+				{!isLoading && isFetched && selectedDayStore && (
+					<div className="radioLayer roomList">
+						{data.map((room: string) => (
+							<p className="roomText">{room}</p>
+						))}
+					</div>
+				)}
 
-				<div className="radioLayer">
-					{availableRooms.map((room) => (
-						<p className="helperText">{room}</p>
-					))}
-				</div>
-				<p className="helperText error">{availabilityError}</p>
+				<p className="helperText error">{error?.message}</p>
 			</div>
 		</div>
 	);

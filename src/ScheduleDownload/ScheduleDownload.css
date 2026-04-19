@@ -23,3 +23,14 @@
 .error {
 	color: red;
 }
+
+.roomList {
+	flex-wrap: wrap;
+	gap: 10px;
+	max-width: 50vw;
+}
+.roomText {
+	color: rgb(99, 185, 251);
+	font-size: 18px;
+	text-shadow: black 1px 1px 1px;
+}
