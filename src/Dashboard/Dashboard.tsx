@@ -219,14 +219,18 @@ export const Dashboard = () => {
 									)
 								}
 							/>
-							{param}
+							{param == "Building" ? "Room" : param}
 						</label>
 					))}
 				</form>
 			</div>
 			<div className="horizontalLayer leftAlign">
 				<p className="introText">
-					Search for which {selectedGeneralQueryParam}:
+					Search for which{" "}
+					{selectedGeneralQueryParam == "Building"
+						? "Room"
+						: selectedGeneralParamValue}
+					:
 				</p>
 				{["Instructor", "Building"].includes(
 					selectedGeneralQueryParam
