@@ -6,7 +6,7 @@
 
 .courseEditList {
 	display: flex;
-    flex-direction: column;
+	flex-direction: column;
 	gap: 10px;
 }
 
@@ -27,11 +27,11 @@
 }
 
 .fieldGroup input {
-	font: inherit;
-	font-weight: 400;
-	padding: 10px;
 	border: 1px solid black;
 	border-radius: 4px;
+	padding: 10px;
+	font: inherit;
+	font-weight: 400;
 }
 
 .courseEditButton {
@@ -40,4 +40,16 @@
 	padding: 10px;
 	font-size: 14pt;
 	text-shadow: 1px 1px 1px white;
+}
+
+.descLabel {
+	margin-right: 20px;
+	font-size: 18pt;
+}
+
+.descInput {
+	margin-bottom: 200px;
+	width: 100%;
+	height: 40px;
+	font-size: 16pt;
 }

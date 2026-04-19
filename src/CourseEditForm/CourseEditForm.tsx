@@ -5,9 +5,13 @@ import "./CourseEditForm.css";
 export const CourseEditForm = (props: {
 	isVisible: boolean;
 	initialCourse?: Course;
-	onSave: (course: Course) => void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	onSave: any;
+	descOnly?: boolean;
 }) => {
 	const [course, setCourse] = useState<Course>(props.initialCourse as Course);
+
+	const [editDesc, setEditDesc] = useState<string>("");
 
 	if (!props.isVisible) return null;
 
@@ -77,6 +81,35 @@ export const CourseEditForm = (props: {
 			options: null
 		}
 	};
+
+	if (props.descOnly) {
+		return (
+			<form
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					gap: "10px"
+				}}
+				onSubmit={(e) => {
+					e.preventDefault();
+					props.onSave({});
+				}}>
+				<label key={"Description"} className="descLabel">
+					Course Description
+					<input
+						type={"text"}
+						name={"desc"}
+						value={editDesc}
+						onChange={(e) => setEditDesc(e.target.value)}
+						className="descInput"
+					/>
+				</label>
+				<button className="courseEditButton" type="submit">
+					Save Course
+				</button>
+			</form>
+		);
+	}
 
 	return (
 		<form

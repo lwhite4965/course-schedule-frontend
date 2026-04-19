@@ -4,8 +4,8 @@ import { CourseEditForm } from "./CourseEditForm";
 import type { Course } from "../types/Course";
 import {
 	deleteExistingCourse,
-	postCourseDescription,
-	postNewCourse
+	postCourseDescription
+	// postNewCourse
 } from "../helpers/postFns";
 
 const defaultCourse: Course = {
@@ -45,6 +45,16 @@ export const CourseEdit = (props: { courses: Course[] }) => {
 	} = useMutation({
 		mutationKey: ["DeleteCourse"],
 		mutationFn: () => deleteExistingCourse({ crnToDelete: CRN })
+	});
+
+	const {
+		mutate: mutateEdit,
+		isSuccess: isSuccessEdit,
+		isError: isFailureEdit
+	} = useMutation({
+		mutationKey: ["EditCourse"],
+		mutationFn: (desc: string) =>
+			postCourseDescription({ crn: CRN, newDescription: desc })
 	});
 
 	const onCreate = () => {
@@ -118,41 +128,24 @@ export const CourseEdit = (props: { courses: Course[] }) => {
 			<CourseEditForm
 				isVisible={formVisible}
 				initialCourse={currentCourse}
-				onSave={(newCourse) => {
-					if (currentMode === "edit") {
-						postCourseDescription({
-							crn: CRN,
-							newDescription: newCourse.courseDescription || ""
-						})
-							.then(() => {
-								setMessage(
-									"Successfully edited course with CRN " + CRN
-								);
-								setCurrentMode("none");
-							})
-							.catch(() => {
-								setMessage(
-									"Failed to edit course with CRN " + CRN
-								);
-							});
-						return;
-					} else if (currentMode === "create") {
-						postNewCourse({ newCourse })
-							.then(() => {
-								setMessage(
-									"Successfully created course with CRN " +
-										newCourse.crn
-								);
-								setCurrentMode("none");
-							})
-							.catch(() => {
-								setMessage(
-									"Failed to create course with CRN " +
-										newCourse.crn
-								);
-							});
-					}
-				}}
+				descOnly={currentMode === "edit"}
+				onSave={
+					currentMode === "edit" ? mutateEdit : console.log("hi")
+					// postNewCourse({ newCourse })
+					// 	.then(() => {
+					// 		setMessage(
+					// 			"Successfully created course with CRN " +
+					// 				newCourse.crn
+					// 		);
+					// 		setCurrentMode("none");
+					// 	})
+					// 	.catch(() => {
+					// 		setMessage(
+					// 			"Failed to create course with CRN " +
+					// 				newCourse.crn
+					// 		);
+					// 	});
+				}
 			/>
 			<p>{message}</p>
 			{currentMode == "delete" && isSuccessDelete && (
@@ -160,6 +153,12 @@ export const CourseEdit = (props: { courses: Course[] }) => {
 			)}
 			{currentMode == "delete" && isFailureDelete && (
 				<p>Course with CRN {CRN} couldn't be deleted</p>
+			)}
+			{currentMode == "edit" && isSuccessEdit && (
+				<p>Course Description for CRN {CRN} successfully updated</p>
+			)}
+			{currentMode == "edit" && isFailureEdit && (
+				<p>Course Description for CRN {CRN} couldn't be updated</p>
 			)}
 		</div>
 	);
