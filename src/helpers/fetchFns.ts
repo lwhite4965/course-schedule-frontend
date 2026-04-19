@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const fetchAllCourses = async () => {
-	const response = await axios.get("localhost:3000/GET/api/all");
+	const response = await axios.get("http://localhost:9517/api/all");
 	return response.data;
 };
 
@@ -12,7 +12,7 @@ export const fetchGeneralCourses = async ({
 	param: string;
 	value: string;
 }) => {
-	const response = await axios.get("localhost:3000/GET/api/courses", {
+	const response = await axios.get("http://localhost:9517/api/courses", {
 		params: {
 			queryParam: param,
 			paramValue: value
@@ -22,7 +22,7 @@ export const fetchGeneralCourses = async ({
 };
 
 export const fetchProfessorSchedule = async ({ email }: { email: string }) => {
-	const response = await axios.get("localhost:3000/GET/api/schedule", {
+	const response = await axios.get("http://localhost:9517/api/schedule", {
 		params: {
 			professorEmail: email
 		}
@@ -31,7 +31,7 @@ export const fetchProfessorSchedule = async ({ email }: { email: string }) => {
 };
 
 export const fetchBadDataReport = async () => {
-	const response = await axios.get("localhost:3000/GET/api/report");
+	const response = await axios.get("http://localhost:9517/api/report");
 	return response.data;
 };
 
@@ -42,7 +42,7 @@ export const fetchAvailableRooms = async ({
 	time: string;
 	days: "M/W" | "T/R" | "F";
 }) => {
-	const response = await axios.get("localhost:3000/GET/api/rooms", {
+	const response = await axios.get("http://localhost:9517/api/rooms", {
 		params: {
 			timeToCheck: time,
 			daysToCheck: days

@@ -39,19 +39,23 @@ export const CourseDisplay = (props: { courses: Course[]; load?: boolean }) => {
 			{currentCourses.map((course) => {
 				return <SingleDisplay course={course}></SingleDisplay>;
 			})}
-			{props.load == true ? <Loading /> : null}
-			<div>
+			{props.load == true && currentCourses.length < 1 ? (
+				<Loading />
+			) : null}
+			<div className="pagRow">
 				<button
 					disabled={currentPage === 1}
-					onClick={() => setCurrentPage(currentPage - 1)}>
+					onClick={() => setCurrentPage(currentPage - 1)}
+					className="pagButton">
 					Previous
 				</button>
-				<span>
+				<span className="helperText">
 					Page {currentPage} of {totalPages}
 				</span>
 				<button
 					disabled={currentPage === totalPages}
-					onClick={() => setCurrentPage(currentPage + 1)}>
+					onClick={() => setCurrentPage(currentPage + 1)}
+					className="pagButton">
 					Next
 				</button>
 			</div>
