@@ -2,10 +2,10 @@ import type { Course } from "../types/Course";
 import { jsPDF } from "jspdf";
 
 // General Helpers
-const termOrder: Record<Course["term"], number> = {
-	S25: 1,
-	F25: 2,
-	S26: 3
+const termOrder: Record<string, number> = {
+	"202501": 1,
+	"202508": 2,
+	"202601": 3
 };
 
 const dayOrder: Record<string, number> = {
@@ -14,6 +14,22 @@ const dayOrder: Record<string, number> = {
 	W: 3,
 	R: 4,
 	F: 5
+};
+
+const formatTerm = (preFormat: string): string => {
+	switch (preFormat) {
+		case "202501":
+			return "S25";
+			break;
+		case "202508":
+			return "F25";
+			break;
+		case "202601":
+			return "S26";
+			break;
+		default:
+			return "N/A";
+	}
 };
 
 function parseTimeToMinutes(time: string): number {
@@ -63,7 +79,7 @@ export function downloadCoursesPDF(courses: Course[]) {
 		// Write Header
 		doc.setFontSize(12);
 		doc.text(
-			`#${index + 1}) ${course.term} - ${course.shortName} (${course.section})`,
+			`#${index + 1}) ${formatTerm(course.term)} - ${course.shortName} (${course.section})`,
 			10,
 			y
 		);
