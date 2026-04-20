@@ -4,24 +4,20 @@ import "./CourseEditForm.css";
 
 export const CourseEditForm = (props: {
 	isVisible: boolean;
-	initialCourse?: Course;
+	initialCourse: Course;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	onSave: any;
 	descOnly?: boolean;
-	crn?: string;
+	crn: string;
 }) => {
-	const [course, setCourse] = useState<Course>(props.initialCourse as Course);
+	const localInitialCourse = { ...props.initialCourse };
+	localInitialCourse.crn = props.crn;
+
+	const [course, setCourse] = useState<Course>(localInitialCourse as Course);
 
 	const [editDesc, setEditDesc] = useState<string>("");
 
 	if (!props.isVisible) return null;
-
-	// function updateCourse(
-	// 	field: keyof Course,
-	// 	value: string | number | string[]
-	// ) {
-	// 	setCourse((prevCourse) => ({ ...prevCourse, [field]: value }));
-	// }
 
 	const formOptions = {
 		"Term": {
@@ -118,6 +114,7 @@ export const CourseEditForm = (props: {
 			onSubmit={(e) => {
 				e.preventDefault();
 				props.onSave(course);
+				console.log(course);
 			}}>
 			<div className="courseEditList">
 				{Object.entries(formOptions).map(
