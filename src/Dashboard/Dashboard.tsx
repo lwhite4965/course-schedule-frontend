@@ -229,7 +229,7 @@ export const Dashboard = () => {
 					Search for which{" "}
 					{selectedGeneralQueryParam == "Building"
 						? "Room"
-						: selectedGeneralParamValue}
+						: selectedGeneralQueryParam}
 					:
 				</p>
 				{["Instructor", "Building"].includes(
