@@ -1,5 +1,5 @@
 import type { Course } from "../types/Course";
-import { SingleDisplay } from "./SingleDisplay.tsx";
+import { SingleDisplay } from "./SingleDisplay";
 import "./SingleDisplay.css";
 import { useState } from "react";
 import { Loading } from "../Loading/Loading";
