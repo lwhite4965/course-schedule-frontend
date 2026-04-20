@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Course } from "../types/Course";
 import "./CourseEditForm.css";
 
@@ -14,6 +14,13 @@ export const CourseEditForm = (props: {
 	localInitialCourse.crn = props.crn;
 
 	const [course, setCourse] = useState<Course>(localInitialCourse as Course);
+	
+	useEffect(() => {
+		setCourse((prevCourse) => ({
+			...prevCourse,
+			crn: props.crn
+		}));
+	}, [props.crn]);
 
 	const [editDesc, setEditDesc] = useState<string>("");
 
