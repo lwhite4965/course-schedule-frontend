@@ -3,7 +3,7 @@ import { fetchBadDataReport } from "../helpers/fetchFns";
 import { useState } from "react";
 import { Loading } from "../Loading/Loading";
 import { useQuery } from "@tanstack/react-query";
-import { CourseDisplay } from "../CourseDisplay/CourseDisplay.tsx";
+import { CourseDisplay } from "../CourseDisplay/CourseDisplay";
 
 export const DataReport = () => {
 	const { data, isLoading, refetch, error } = useQuery({
